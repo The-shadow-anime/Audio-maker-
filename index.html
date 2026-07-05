@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEME_REMIX // V1.0</title>
+    <!-- Tailwind CSS CDN for instant styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom neon blue glow effect */
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+        .neon-border:focus-within {
+            border-color: #00F0FF;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#05070A] text-[#F8FAFC] font-mono min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+    <!-- 1. HEADER TERMINAL -->
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center border-b border-[#1E293B] pb-4 mb-6">
+        <div class="flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-[#00F0FF] animate-pulse"></span>
+            <h1 class="text-sm font-bold tracking-widest text-[#00F0FF]">MEME_REMIX // V1.0</h1>
+        </div>
+        <div class="text-xs text-gray-500 hidden sm:block">STATUS: READY_TO_MIX</div>
+    </header>
+
+    <!-- 2. MAIN BENTO GRID CONTAINER -->
+    <main class="w-full max-w-5xl mx-auto flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-max">
+        
+        <!-- ROW 1: THE INPUT PROMPT BOX (Spans full width) -->
+        <section class="md:col-span-3 bg-[#0B0F17] border border-[#1E293B] p-6 rounded-lg neon-glow transition-all duration-300">
+            <label class="block text-xs uppercase tracking-wider text-gray-400 mb-2">Step 1: Input the Magic Words</label>
+            <div class="neon-border flex border border-[#1E293B] rounded bg-[#0D1117] overflow-hidden p-2 transition-all duration-200">
+                <input type="text" placeholder="Type a word or phrase (e.g., Tired of winning)..." 
+                       class="w-full bg-transparent border-none text-[#F8FAFC] placeholder-gray-600 focus:outline-none px-2 py-3 text-base">
+                <button class="bg-[#1E293B] hover:bg-[#00F0FF] hover:text-[#05070A] px-6 rounded text-xs uppercase font-bold tracking-wider transition-all duration-200">
+                    Search
+                </button>
+            </div>
+        </section>
+
+        <!-- ROW 2 - CARD 1: THE SEARCH RESULT DISPLAY -->
+        <section class="bg-[#0B0F17] border border-[#1E293B] p-5 rounded-lg flex flex-col justify-between min-h-[160px] hover:border-[#00F0FF] transition-all duration-200">
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-3">Detected Sound Clip</h3>
+                <div class="text-sm font-bold text-[#F8FAFC] truncate">No Clip Loaded</div>
+                <div class="text-xs text-gray-500 mt-1">Origin: Waiting for input...</div>
+            </div>
+            <!-- Simple Mock Visualizer Bar -->
+            <div class="flex gap-1 items-end h-8 w-full bg-[#0D1117] rounded p-1 overflow-hidden opacity-30">
+                <div class="bg-[#00F0FF] w-full h-2"></div>
+                <div class="bg-[#00F0FF] w-full h-4"></div>
+                <div class="bg-[#00F0FF] w-full h-1"></div>
+                <div class="bg-[#00F0FF] w-full h-3"></div>
+            </div>
+        </section>
+
+        <!-- ROW 2 - CARD 2: BEAT SELECTOR TABS -->
+        <section class="bg-[#0B0F17] border border-[#1E293B] p-5 rounded-lg hover:border-[#00F0FF] transition-all duration-200">
+            <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-3">Select Instrumental Beat</h3>
+            <div class="flex flex-col gap-2">
+                <button class="w-full border border-[#00F0FF] text-[#00F0FF] bg-[rgba(0,240,255,0.05)] py-2 text-xs uppercase tracking-wider rounded font-bold text-left px-3">
+                    ⚡ Phonk Beat
+                </button>
+                <button class="w-full border border-[#1E293B] text-gray-400 hover:border-gray-600 py-2 text-xs uppercase tracking-wider rounded text-left px-3 transition-all">
+                    🥁 Heavy Trap
+                </button>
+                <button class="w-full border border-[#1E293B] text-gray-400 hover:border-gray-600 py-2 text-xs uppercase tracking-wider rounded text-left px-3 transition-all">
+                    ☕ Lo-Fi Vibe
+                </button>
+            </div>
+        </section>
+
+        <!-- ROW 2 - CARD 3: AUDIO CONTROLS (BPM / REPEAT) -->
+        <section class="bg-[#0B0F17] border border-[#1E293B] p-5 rounded-lg hover:border-[#00F0FF] transition-all duration-200 flex flex-col justify-center gap-4">
+            <div>
+                <div class="flex justify-between text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    <span>Mix Volume</span>
+                    <span class="text-[#00F0FF]">80%</span>
+                </div>
+                <input type="range" class="w-full accent-[#00F0FF] bg-[#0D1117] h-1 rounded" min="0" max="100" value="80">
+            </div>
+            <div>
+                <div class="flex justify-between text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    <span>Meme Repeat Rate</span>
+                    <span class="text-[#00F0FF]">Every 4 Beats</span>
+                </div>
+                <input type="range" class="w-full accent-[#00F0FF] bg-[#0D1117] h-1 rounded" min="1" max="8" value="4">
+            </div>
+        </section>
+
+        <!-- ROW 3: THE MONETIZED VAULT ACTION (Spans full width) -->
+        <section class="md:col-span-3 bg-[#0B0F17] border border-dashed border-[#1E293B] p-6 rounded-lg text-center flex flex-col sm:flex-row justify-between items-center gap-4 mt-2">
+            <div class="text-left">
+                <h4 class="text-sm font-bold">Preview Mixed Tracks Live</h4>
+                <p class="text-xs text-gray-500 mt-1">Listen to the custom remix preview anytime for free.</p>
+            </div>
+            <div class="flex gap-3 w-full sm:w-auto">
+                <button class="flex-1 sm:flex-initial bg-transparent border border-[#00F0FF] text-[#00F0FF] hover:bg-[rgba(0,240,255,0.1)] px-6 py-3 rounded text-xs uppercase font-bold tracking-wider transition-all">
+                    Play Preview
+                </button>
+                <button class="flex-1 sm:flex-initial bg-[#00F0FF] hover:bg-[#00c8d4] text-[#05070A] px-6 py-3 rounded text-xs uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2">
+                    <span>Download Mastercut</span>
+                    <span class="bg-[#05070A] text-[#00F0FF] text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">$1.00</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 3. TERMINAL FOOTER -->
+    <footer class="w-full max-w-5xl mx-auto border-t border-[#1E293B] pt-4 mt-6 flex justify-between text-[10px] text-gray-600">
+        <div>SERVER: VERCEL_EDGE</div>
+        <div>HOSTING_COST: $0.00</div>
+    </footer>
+
+</body>
+</html>
