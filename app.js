@@ -1,5 +1,5 @@
 // ==========================================
-// MEME_REMIX // SUITE ENGINE V1.3
+// MEME_REMIX // SUITE ENGINE V1.4
 // ==========================================
 
 const state = {
@@ -129,9 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             vocalIndex = (vocalIndex + 1) % state.audioSequence.length;
 
-            // Wait until the word finishes before firing the next word in the phrase, keeping pace with the repeat rate slider
+            // Loops vocals based on the slider state
             vocalAudio.onended = () => {
-                const delay = (60 / 128) * state.repeatRate * 1000; // Calibrated to track BPM calculations
+                const delay = (60 / 128) * state.repeatRate * 1000; 
                 setTimeout(playNextVocal, delay);
             };
         }
@@ -143,20 +143,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (playButton) {
         playButton.addEventListener('click', () => {
             state.isPlaying = !state.isPlaying;
-            playButton.innerText = state.isPlaying ? "Stop Preview" : "Play Preview";
+            playButton.innerText = state.isPlaying ? "STOP PREVIEW" : "PLAY PREVIEW";
             playSongEngine();
         });
     }
 
-    // 3. Slider Action: Dynamically update Repeat Rate text and state
-    const rateSlider = document.querySelector('input[type="range"]');
-    const rateText = Array.from(document.querySelectorAll('span')).find(s => s.innerText.includes('EVERY'));
+    // 3. Slider Actions: Look for sliders by their structural position order
+    const sliders = document.querySelectorAll('input[type="range"]');
+    
+    // First slider = Volume Control
+    if (sliders[0]) {
+        sliders[0].addEventListener('input', (e) => {
+            const val = e.target.value;
+            state.volume = parseInt(val);
+            
+            // Look for the volume indicator text next to it
+            const volLabel = sliders[0].parentElement.querySelector('span:last-child') || sliders[0].parentElement.parentElement.querySelector('.text-cyan-400');
+            if (volLabel) volLabel.innerText = `${val}%`;
+            
+            if (state.beatAudio) {
+                state.beatAudio.volume = state.volume / 100;
+            }
+        });
+    }
 
-    if (rateSlider && rateText) {
-        rateSlider.addEventListener('input', (e) => {
+    // Second slider = Meme Repeat Rate Control
+    if (sliders[1]) {
+        sliders[1].addEventListener('input', (e) => {
             const val = e.target.value;
             state.repeatRate = parseInt(val);
-            rateText.innerText = `EVERY ${val} BEATS`;
+            
+            // Find the display text container belonging to this specific slider group
+            const rateLabel = sliders[1].parentElement.querySelector('span:last-child') || sliders[1].parentElement.parentElement.querySelector('.text-cyan-400');
+            if (rateLabel) {
+                rateLabel.innerText = `EVERY ${val} BEATS`;
+            }
             console.log(`⏱️ Repeat rate updated to: every ${val} beats`);
         });
     }
