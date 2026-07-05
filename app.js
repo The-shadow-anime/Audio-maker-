@@ -1,5 +1,5 @@
 // ==========================================
-// MEME_REMIX // SUITE ENGINE V1.2
+// MEME_REMIX // SUITE ENGINE V1.3
 // ==========================================
 
 const state = {
@@ -148,7 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Monetization Gateway Trigger
+    // 3. Slider Action: Dynamically update Repeat Rate text and state
+    const rateSlider = document.querySelector('input[type="range"]');
+    const rateText = Array.from(document.querySelectorAll('span')).find(s => s.innerText.includes('EVERY'));
+
+    if (rateSlider && rateText) {
+        rateSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            state.repeatRate = parseInt(val);
+            rateText.innerText = `EVERY ${val} BEATS`;
+            console.log(`⏱️ Repeat rate updated to: every ${val} beats`);
+        });
+    }
+
+    // 4. Monetization Gateway Trigger
     if (downloadButton) {
         downloadButton.addEventListener('click', () => {
             alert("💰 Paywall Triggered: This links to your $1 Gumroad/Crypto checkout page before exporting the final MP3 compilation!");
