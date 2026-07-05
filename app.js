@@ -1,5 +1,5 @@
 // ==========================================
-// MEME_REMIX // SUITE ENGINE V1.4
+// MEME_REMIX // SUITE ENGINE V1.5
 // ==========================================
 
 const state = {
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             vocalIndex = (vocalIndex + 1) % state.audioSequence.length;
 
-            // Loops vocals based on the slider state
+            // DYNAMIC FIX: Looks up the real-time slider value dynamically right when the audio finishes!
             vocalAudio.onended = () => {
                 const delay = (60 / 128) * state.repeatRate * 1000; 
                 setTimeout(playNextVocal, delay);
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rateLabel) {
                 rateLabel.innerText = `EVERY ${val} BEATS`;
             }
-            console.log(`⏱️ Repeat rate updated to: every ${val} beats`);
+            console.log(`⏱️ Live check - repeat rate shifted to: every ${val} beats`);
         });
     }
 
