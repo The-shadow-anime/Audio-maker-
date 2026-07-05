@@ -1,5 +1,5 @@
 // ==========================================
-// MEME_REMIX // ENGINE CORE V1.0
+// MEME_REMIX // SUITE ENGINE V1.2
 // ==========================================
 
 const state = {
@@ -7,76 +7,151 @@ const state = {
     isPlaying: false,
     volume: 80,
     repeatRate: 4,
-    currentMemeAudio: null
+    audioSequence: [], // Stores the chained phrase audio clips
+    beatAudio: null    // Stores the looping instrumental background track
+};
+
+// High-quality public instrumental loops
+const BEAT_TRACKS = {
+    phonk: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    trap: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    lofi: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("⚡ MEME_REMIX Engine Live");
+    console.log("⚡ MEME_REMIX Engine Activated");
     
     const searchInput = document.querySelector('input[type="text"]');
-    const searchButton = document.querySelector('button');
-    const playButton = document.querySelectorAll('button')[1];
-    const downloadButton = document.querySelectorAll('button')[2];
+    
+    // Dynamically target buttons based on text content to avoid structural errors
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const searchButton = buttons.find(b => b.innerText.includes('SEARCH'));
+    const playButton = buttons.find(b => b.innerText.toLowerCase().includes('preview'));
+    const downloadButton = buttons.find(b => b.innerText.toLowerCase().includes('download') || b.innerText.toLowerCase().includes('mastercut'));
 
-    // Search Action
+    // Handle Instrumental Selection Layout Visuals
+    const beatButtons = {
+        phonk: buttons.find(b => b.innerText.toLowerCase().includes('phonk')),
+        trap: buttons.find(b => b.innerText.toLowerCase().includes('heavy') || b.innerText.toLowerCase().includes('trap')),
+        lofi: buttons.find(b => b.innerText.toLowerCase().includes('lo-fi') || b.innerText.toLowerCase().includes('vibe'))
+    };
+
+    Object.keys(beatButtons).forEach(style => {
+        if (beatButtons[style]) {
+            beatButtons[style].addEventListener('click', () => {
+                state.selectedBeat = style;
+                console.log(`🎵 Selected background style: ${style}`);
+                
+                // Update track if playing live
+                if (state.isPlaying) {
+                    playSongEngine();
+                }
+            });
+        }
+    });
+
+    // 1. Full Phrase Compilation Song Engine
     if (searchButton) {
-        searchButton.addEventListener('click', () => {
+        searchButton.addEventListener('click', async () => {
             const textInput = searchInput.value.trim();
-            if (!textInput) return alert("Type a meme phrase first!");
+            if (!textInput) return alert("Type your song lyric phrase first!");
             
             const statusText = document.querySelector('.truncate');
             const originText = document.querySelector('.text-xs.text-gray-500.mt-1');
             
-            statusText.innerText = `Searching for "${textInput}"...`;
-            originText.innerText = "Status: Querying live network...";
+            statusText.innerText = `Compiling track arrangement...`;
+            originText.innerText = "Status: Fetching audio elements...";
+            
+            // Clean input and split phrase into individual song words
+            const words = textInput.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+            state.audioSequence = []; // Reset old song data
 
-            // Uses an open public audio system to find spoken words instantly for $0
-            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(textInput)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data[0] && data[0].phonetics) {
+            try {
+                // Fetch live phonetic sounds concurrently for the entire song phrase
+                const fetchPromises = words.map(word => 
+                    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`)
+                        .then(res => res.ok ? res.json() : null)
+                        .catch(() => null)
+                );
+
+                const results = await Promise.all(fetchPromises);
+
+                results.forEach((data, index) => {
+                    if (data && data[0] && data[0].phonetics) {
                         const audioObj = data[0].phonetics.find(p => p.audio !== "");
                         if (audioObj && audioObj.audio) {
-                            state.currentMemeAudio = new Audio(audioObj.audio);
-                            statusText.innerText = `"${textInput}" Vocal Found`;
-                            originText.innerText = "Origin: Public Sound Vault";
-                            console.log("🔊 Clip loaded:", audioObj.audio);
-                        } else {
-                            statusText.innerText = "Meme clip muted.";
-                            originText.innerText = "No vocal trace available.";
+                            state.audioSequence.push(audioObj.audio);
                         }
-                    } else {
-                        statusText.innerText = "No clip found.";
-                        originText.innerText = "Try different keywords.";
                     }
-                })
-                .catch(err => {
-                    console.error(err);
-                    statusText.innerText = "Search failed.";
-                    originText.innerText = "Network transmission error.";
                 });
-        });
-    }
 
-    // Play Preview Action
-    if (playButton) {
-        playButton.addEventListener('click', () => {
-            state.isPlaying = !state.isPlaying;
-            playButton.innerText = state.isPlaying ? "Stop Preview" : "Play Preview";
-            
-            if (state.isPlaying && state.currentMemeAudio) {
-                state.currentMemeAudio.play();
-            } else if (!state.isPlaying && state.currentMemeAudio) {
-                state.currentMemeAudio.pause();
-                state.currentMemeAudio.currentTime = 0;
+                if (state.audioSequence.length > 0) {
+                    statusText.innerText = `"${textInput}" Song Arrangement Ready`;
+                    originText.innerText = `Origin: Compiled ${state.audioSequence.length} vocal tracks seamlessly.`;
+                    console.log("🎼 Compiled Sequence:", state.audioSequence);
+                } else {
+                    statusText.innerText = "Compilation failed.";
+                    originText.innerText = "Could not verify vocal assets. Try simplified terms.";
+                }
+
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "Network Error.";
+                originText.innerText = "Failed structural sync.";
             }
         });
     }
 
-    // Download Action
+    // 2. Playback Sequence Control Loop
+    function playSongEngine() {
+        // Stop current audio instances
+        if (state.beatAudio) {
+            state.beatAudio.pause();
+            state.beatAudio = null;
+        }
+
+        if (!state.isPlaying) return;
+
+        // Initialize background loop
+        state.beatAudio = new Audio(BEAT_TRACKS[state.selectedBeat]);
+        state.beatAudio.loop = true;
+        state.beatAudio.volume = state.volume / 100;
+        state.beatAudio.play();
+
+        // Sequential vocal track processor
+        let vocalIndex = 0;
+        function playNextVocal() {
+            if (!state.isPlaying || state.audioSequence.length === 0) return;
+            
+            const vocalAudio = new Audio(state.audioSequence[vocalIndex]);
+            vocalAudio.volume = 1.0; 
+            vocalAudio.play();
+
+            vocalIndex = (vocalIndex + 1) % state.audioSequence.length;
+
+            // Wait until the word finishes before firing the next word in the phrase, keeping pace with the repeat rate slider
+            vocalAudio.onended = () => {
+                const delay = (60 / 128) * state.repeatRate * 1000; // Calibrated to track BPM calculations
+                setTimeout(playNextVocal, delay);
+            };
+        }
+
+        // Initialize vocal sequence line
+        playNextVocal();
+    }
+
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            state.isPlaying = !state.isPlaying;
+            playButton.innerText = state.isPlaying ? "Stop Preview" : "Play Preview";
+            playSongEngine();
+        });
+    }
+
+    // 3. Monetization Gateway Trigger
     if (downloadButton) {
         downloadButton.addEventListener('click', () => {
-            alert("💰 Paywall Triggered: This links to your $1 Gumroad/Crypto checkout page before exporting the final MP3!");
+            alert("💰 Paywall Triggered: This links to your $1 Gumroad/Crypto checkout page before exporting the final MP3 compilation!");
         });
     }
 });
